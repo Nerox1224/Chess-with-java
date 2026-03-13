@@ -32,9 +32,7 @@ public abstract class Pieza implements Controlador {
     }
 
     @Override
-    public void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior,
-                      int f, int c) {
-
+    public void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior, int f, int c) {
         if (tablero[posAnterior.getFila()][posAnterior.getColumna()]
                 .getPieza().ValidarMovimiento(movimientosPosibles, tablero, f, c)) {
             tablero[posAnterior.getFila()][posAnterior.getColumna()].getPieza().setSeMovio(true);
@@ -71,6 +69,6 @@ public abstract class Pieza implements Controlador {
     }
 
     public boolean getSeMovio() {
-        return SeMovio;
+        return !SeMovio;
     }
 }

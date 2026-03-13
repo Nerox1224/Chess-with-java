@@ -1,23 +1,32 @@
 package PiezasLogica.Piezas;
 
+import Jugador.Player;
+import Jugador.TipoPlayer;
 import Mesa.Casilla;
 import PiezasLogica.Color_pieza;
 import PiezasLogica.Pieza;
+import PiezasLogica.Promotion;
 import PiezasLogica.Tipo_pieza;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Peon extends Pieza {
-    private int direccion;
-    private int firstMovePeon;
+    private final Player jugador;
+    private final int direccion;
+    private final int RowPromotion;
+    private final int firstMovePeon;
     private boolean ValidFirstMove = true;
 
-    public Peon(Color_pieza.ColorPieza color) {
+    public Peon(Color_pieza.ColorPieza color, Player directionPlayer) {
         super(color, Tipo_pieza.Pieza_tipo.Peon);
-        this.direccion = getColor() == Color_pieza.ColorPieza.blanco ? -1 : 1;
-        this.firstMovePeon = getColor() == Color_pieza.ColorPieza.blanco ? -2 : 2;
+        jugador = directionPlayer;
+        this.RowPromotion = directionPlayer.getTipoJugador() == TipoPlayer.TipoJugador.PrincipalPlayer ? 0 : 7;
+        this.direccion = directionPlayer.getTipoJugador() == TipoPlayer.TipoJugador.PrincipalPlayer ? -1 : 1;
+        this.firstMovePeon = directionPlayer.getTipoJugador() == TipoPlayer.TipoJugador.PrincipalPlayer ? -2 : 2;
     }
 
     @Override
@@ -29,8 +38,9 @@ public class Peon extends Pieza {
         int mn = fila + direccion;
         if (validarFilaColumna(mn, columna)) {
             if (tablero[mn][columna].getPieza() == null) {
-                if (tablero[m1][columna].getPieza() == null && ValidFirstMove)
-                    posiblesMovimientos.add(tablero[m1][columna]);
+                if (ValidFirstMove)
+                    if (tablero[m1][columna].getPieza() == null)
+                        posiblesMovimientos.add(tablero[m1][columna]);
                 posiblesMovimientos.add(tablero[mn][columna]);
             }
         }
@@ -45,5 +55,22 @@ public class Peon extends Pieza {
             posiblesMovimientos.add(tablero[yfo][d]);
         }
         return posiblesMovimientos;
+    }
+
+    @Override
+    public void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior, int f, int c) {
+        if (tablero[posAnterior.getFila()][posAnterior.getColumna()]
+                .getPieza().ValidarMovimiento(movimientosPosibles, tablero, f, c)) {
+            tablero[posAnterior.getFila()][posAnterior.getColumna()].getPieza().setSeMovio(true);
+            tablero[f][c].setState(tablero[posAnterior.getFila()][posAnterior.getColumna()].getPieza());
+            tablero[posAnterior.getFila()][posAnterior.getColumna()].setState(null);
+
+            SeMovio = true;
+            ValidFirstMove = false;
+
+            if (f == RowPromotion) {
+                Promotion pro = new Promotion(tablero, f, c, jugador);
+            }
+        }
     }
 }

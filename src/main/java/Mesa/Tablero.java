@@ -19,15 +19,15 @@ public class Tablero {
     private Color_pieza.ColorPieza Turno;
     private int numRand = rand.nextInt(1, 3);
 
-    private Casilla[][] tablero = new Casilla[8][8];
+    private final Casilla[][] tablero = new Casilla[8][8];
     private Casilla posAnterior;
     private JPanel tabla;
     private List<Casilla> posiblesMovimientos;
 
     public Tablero(Player J1, Player J2) {
         CreateTablero();
-        PositionPiezas(0, Color_pieza.ColorPieza.negro);
-        PositionPiezas(7, Color_pieza.ColorPieza.blanco);
+        PositionPiezas(7, Color_pieza.ColorPieza.blanco, J1);
+        PositionPiezas(0, Color_pieza.ColorPieza.negro, J2);
         this.J1 = J1;
         this.J2 = J2;
         Turno = numRand == 1 ? J1.getColor() : J2.getColor();
@@ -52,9 +52,9 @@ public class Tablero {
                 tablero[fila][columna].setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.GRAY);
 
                 tablero[fila][columna].addActionListener(e -> {
-                    if (tablero[f][c].getPieza() != null)
+                    if (tablero[f][c].getPieza() != null && posiblesMovimientos == null)
                         SelectCasilla(f, c);
-                    if (posAnterior != null && tablero[f][c] != tablero[posAnterior.getFila()][posAnterior.getColumna()])
+                    if (posAnterior != null)
                         MovePieza(f, c);
                 });
                 tabla.add(tablero[fila][columna]);
@@ -69,7 +69,7 @@ public class Tablero {
     //Posicionar piezas
     private List<Integer> pos = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
 
-    public void PositionPiezas(int fila, Color_pieza.ColorPieza color) {
+    public void PositionPiezas(int fila, Color_pieza.ColorPieza color, Player player) {
         /* ---- Torres ---- */
         tablero[fila][pos.get(0)].setState(new Torre(color));
         tablero[fila][pos.get(7)].setState(new Torre(color));
@@ -86,17 +86,18 @@ public class Tablero {
         tablero[fila][pos.get(3)].setState(new Reina(color));
 
         /* ---- Reyes ---- */
-        tablero[fila][pos.get(4)].setState(new Rey(color));
+        tablero[fila][pos.get(4)].setState(new Rey(color, player));
 
         /* ---- Peones ---- */
         int filaPeones;
         if (fila == 0) filaPeones = fila + 1;
         else filaPeones = fila - 1;
         for (var column : pos) {
-            tablero[filaPeones][column].setState(new Peon(color));
+            tablero[filaPeones][column].setState(new Peon(color, player));
         }
     }
 
+    //Selección de una pieza
     private void SelectCasilla(int fila, int columna) {
         Repintar();
         if (tablero[fila][columna].getPieza().getColor() != Turno) {
@@ -111,6 +112,7 @@ public class Tablero {
         posAnterior = new Casilla(fila, columna);
     }
 
+    //movimiento
     private void MovePieza(int fila, int column) {
         Casilla c = tablero[posAnterior.getFila()][posAnterior.getColumna()];
         if (c.getPieza().ValidarMovimiento(posiblesMovimientos, tablero, fila, column)) {
@@ -125,13 +127,16 @@ public class Tablero {
         }
     }
 
+    //repintar las casillas
     private void Repintar() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                if ((i + j) % 2 == 0)
-                    tablero[i][j].setBackground(Color.WHITE);
-                else
-                    tablero[i][j].setBackground(Color.GRAY);
+        if (posiblesMovimientos == null) return;
+        for (var c : posiblesMovimientos) {
+            int i = c.getFila();
+            int j = c.getColumna();
+            if ((i + j) % 2 == 0) {
+                tablero[i][j].setBackground(Color.WHITE);
+            } else {
+                tablero[i][j].setBackground(Color.GRAY);
             }
         }
     }

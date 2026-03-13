@@ -10,6 +10,5 @@ public interface Controlador {
 
     List<Casilla> movimientosPosibles(Casilla[][] tablero, int fila, int columna);
 
-    void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior,
-               int f, int c);
+    void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior, int f, int c);
 }

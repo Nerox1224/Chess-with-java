@@ -1,22 +1,23 @@
 package PiezasLogica.Piezas;
 
+import Jugador.Player;
+import Jugador.TipoPlayer;
 import Mesa.Casilla;
 import PiezasLogica.*;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Rey extends Pieza {
-    private int[][] direcciones = {
+    private final int[][] direcciones = {
             {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}
     };
+    private final int filaOriginal;
 
-    public Rey(Color_pieza.ColorPieza color) {
+    public Rey(Color_pieza.ColorPieza color, @NotNull Player jugador) {
         super(color, Tipo_pieza.Pieza_tipo.Rey);
+        filaOriginal = jugador.getTipoJugador() == TipoPlayer.TipoJugador.PrincipalPlayer ? 7 : 0;
     }
 
     @Override
@@ -36,7 +37,8 @@ public class Rey extends Pieza {
         PosMovEnrrosque(posiblesMovimientos, tablero);
         return posiblesMovimientos;
     }
-    public void MovJaque(@NotNull List<Casilla> posiblesMovimientos, Casilla[][] tablero) {
+
+    private void MovJaque(@NotNull List<Casilla> posiblesMovimientos, Casilla[][] tablero) {
         List<Casilla> remover = new ArrayList<>();
         int direccion = getColor() == Color_pieza.ColorPieza.blanco ? -1 : 1;
         int[] DerIzq = {1, -1};
@@ -119,14 +121,14 @@ public class Rey extends Pieza {
 
     private void PosMovEnrrosque(List<Casilla> posiblesMovimientos, Casilla[][] tablero) {
         if (SeMovio) return;
-        int filaOriginal = getColor() == Color_pieza.ColorPieza.blanco ? 7 : 0;
+
         //Derecha
         if (tablero[filaOriginal][5].getPieza() == null &&
                 tablero[filaOriginal][6].getPieza() == null &&
                 tablero[filaOriginal][7].getPieza() != null) {
             if (tablero[filaOriginal][7].getPieza().getTipo() == Tipo_pieza.Pieza_tipo.Torre
                     && !validarEnemigo(tablero[filaOriginal][7])
-                    && !tablero[filaOriginal][7].getPieza().getSeMovio())
+                    && tablero[filaOriginal][7].getPieza().getSeMovio())
                 posiblesMovimientos.add(tablero[filaOriginal][6]);
         }
         //Izquierda
@@ -136,8 +138,34 @@ public class Rey extends Pieza {
                 tablero[filaOriginal][0].getPieza() != null) {
             if (tablero[filaOriginal][0].getPieza().getTipo() == Tipo_pieza.Pieza_tipo.Torre
                     && !validarEnemigo(tablero[filaOriginal][0])
-                    && !tablero[filaOriginal][0].getPieza().getSeMovio())
+                    && tablero[filaOriginal][0].getPieza().getSeMovio())
                 posiblesMovimientos.add(tablero[filaOriginal][1]);
+        }
+    }
+
+    @Override
+    public void Mover(@NotNull List<Casilla> movimientosPosibles, Casilla[][] tablero, Casilla posAnterior, int f, int c) {
+        List<Casilla> movimientosEnrrosque = new ArrayList<>();
+        PosMovEnrrosque(movimientosEnrrosque, tablero);
+        if (tablero[posAnterior.getFila()][posAnterior.getColumna()]
+                .getPieza().ValidarMovimiento(movimientosPosibles, tablero, f, c)) {
+
+            tablero[posAnterior.getFila()][posAnterior.getColumna()].getPieza().setSeMovio(true);
+            tablero[f][c].setState(tablero[posAnterior.getFila()][posAnterior.getColumna()].getPieza());
+            tablero[posAnterior.getFila()][posAnterior.getColumna()].setState(null);
+
+            if(!movimientosEnrrosque.isEmpty()){
+                if(c == 1){
+                    tablero[filaOriginal][2].setState(tablero[filaOriginal][0].getPieza());
+                    tablero[filaOriginal][0].setState(null);
+                }
+                if(c == 6){
+                    tablero[filaOriginal][5].setState(tablero[filaOriginal][7].getPieza());
+                    tablero[filaOriginal][7].setState(null);
+                }
+            }
+            SeMovio = true;
+
         }
     }
 }

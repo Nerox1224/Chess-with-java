@@ -1,4 +1,5 @@
 import Jugador.Player;
+import Jugador.TipoPlayer;
 import Mesa.Tablero;
 import PiezasLogica.Color_pieza;
 import org.jetbrains.annotations.NotNull;
@@ -9,20 +10,18 @@ import javax.swing.*;
 
 
 public class Main extends JFrame {
-    private final Player PJugador = new Player(Color_pieza.ColorPieza.blanco);
-    private final Player SJugador = new Player(Color_pieza.ColorPieza.negro);
+    private final Player PJugador = new Player(Color_pieza.ColorPieza.blanco, TipoPlayer.TipoJugador.PrincipalPlayer);
+    private final Player SJugador = new Player(Color_pieza.ColorPieza.negro, TipoPlayer.TipoJugador.player);
     private final Tablero tablero = new Tablero(PJugador, SJugador);
 
     private JPanel container;
     private CardLayout cardLayout;
 
-    public static void main(String[] args) {
+     static void main(String[] args) {
         new Main().setVisible(true);
     }
 
     public Main() {
-        PJugador.setPositon_Rey(7, 4);
-        SJugador.setPositon_Rey(0, 4);
         InitComponents();
     }
 
@@ -97,9 +96,7 @@ public class Main extends JFrame {
         JPanel Play = new JPanel(new BorderLayout());
         JButton Regresar = new JButton("Regresar");
         Regresar.setAlignmentX(Component.LEFT_ALIGNMENT);
-        Regresar.addActionListener(e -> {
-            cardLayout.show(container, "Ajedrez");
-        });
+        Regresar.addActionListener(e -> cardLayout.show(container, "Ajedrez"));
         Play.add(Regresar, BorderLayout.NORTH);
         Play.add(tablero.getTablero(), BorderLayout.CENTER);
         return Play;
