@@ -43,6 +43,10 @@ public abstract class Pieza implements Controlador {
         }
     }
 
+    @Override
+    public boolean SalvarRey(Casilla[][] tablero, int fila, int columna) {
+        return false;
+    }
 
     //Validaciones
     public boolean validarFilaColumna(int fila, int columna) {

@@ -1,3 +1,4 @@
+import Jugador.ConfigurationPlayer;
 import Jugador.Player;
 import Jugador.TipoPlayer;
 import Mesa.Tablero;
@@ -12,12 +13,13 @@ import javax.swing.*;
 public class Main extends JFrame {
     private final Player PJugador = new Player(Color_pieza.ColorPieza.blanco, TipoPlayer.TipoJugador.PrincipalPlayer);
     private final Player SJugador = new Player(Color_pieza.ColorPieza.negro, TipoPlayer.TipoJugador.player);
-    private final Tablero tablero = new Tablero(PJugador, SJugador);
+    private ConfigurationPlayer Config = new ConfigurationPlayer(PJugador, SJugador);
+    private Tablero tablero = new Tablero(PJugador, SJugador);
 
     private JPanel container;
     private CardLayout cardLayout;
 
-     static void main(String[] args) {
+    static void main(String[] args) {
         new Main().setVisible(true);
     }
 
@@ -37,6 +39,7 @@ public class Main extends JFrame {
 
         container.add(TitleGame(), "Ajedrez");
         container.add(Tb(), "Game");
+        container.add(Cf(), "Configuration");
         add(container);
     }
 
@@ -55,17 +58,21 @@ public class Main extends JFrame {
         JPanel Options = new JPanel();
         Options.setLayout(new BoxLayout(Options, BoxLayout.Y_AXIS));
 
-        JButton Play = new JButton("Play");
+        JButton Newgame = new JButton("New game");
+        JButton Continue = new JButton("Continue");
         JButton Configuration = new JButton("Configuration");
         JButton Exit = new JButton("Exit");
 
 
-        Play.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Newgame.setAlignmentX(Component.CENTER_ALIGNMENT);
+        Continue.setAlignmentX(Component.CENTER_ALIGNMENT);
         Configuration.setAlignmentX(Component.CENTER_ALIGNMENT);
         Exit.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         Options.add(Box.createVerticalStrut(50));
-        Options.add(Play);
+        Options.add(Newgame);
+        Options.add(Box.createVerticalStrut(20));
+        Options.add(Continue);
         Options.add(Box.createVerticalStrut(20));
         Options.add(Configuration);
         Options.add(Box.createVerticalStrut(20));
@@ -73,19 +80,19 @@ public class Main extends JFrame {
         Options.add(Box.createVerticalStrut(80));
 
         /*   --------Eventos--------   */
-        Play.addActionListener(e -> {
+        Newgame.addActionListener(e -> {
+            tablero = new Tablero(PJugador, SJugador);
+            container.remove(Tb());
+            container.add(Tb(), "Game");
             cardLayout.show(container, "Game");
-
-            ImageIcon icon = new ImageIcon(
-                    Objects.requireNonNull(getClass().getResource("/Imagenes/piezas_img/Peon_" + tablero.getTurno() + ".png")));
-            Image imagen = icon.getImage().getScaledInstance(20, 30, Image.SCALE_SMOOTH);
-
-            JLabel presentGame = new JLabel("Turno del equipo: " + tablero.getTurno() + "\n", new ImageIcon(imagen), SwingConstants.CENTER);
-            presentGame.setHorizontalTextPosition(JLabel.CENTER);
-            presentGame.setVerticalTextPosition(JLabel.NORTH);
-            JOptionPane.showMessageDialog(null, presentGame);
+            tablero.PresentGame();
+        });
+        Continue.addActionListener(e -> {
+            cardLayout.show(container, "Game");
+            tablero.PresentGame();
         });
         Configuration.addActionListener(e -> {
+            cardLayout.show(container, "Configuration");
         });
         Exit.addActionListener(e -> this.dispose());
         return Options;
@@ -93,13 +100,25 @@ public class Main extends JFrame {
 
     /*   --------Tablero--------   */
     private @NotNull JPanel Tb() {
-        JPanel Play = new JPanel(new BorderLayout());
+        JPanel Newgame = new JPanel(new BorderLayout());
+
         JButton Regresar = new JButton("Regresar");
         Regresar.setAlignmentX(Component.LEFT_ALIGNMENT);
         Regresar.addActionListener(e -> cardLayout.show(container, "Ajedrez"));
-        Play.add(Regresar, BorderLayout.NORTH);
-        Play.add(tablero.getTablero(), BorderLayout.CENTER);
-        return Play;
+        Newgame.add(Regresar, BorderLayout.NORTH);
+        Newgame.add(tablero.getTablero(), BorderLayout.CENTER);
+        return Newgame;
     }
 
+    /*   --------Configuración--------   */
+    private @NotNull JPanel Cf() {
+        JPanel Configuration = new JPanel(new BorderLayout());
+
+        JButton Regresar = new JButton("Regresar");
+        Regresar.setAlignmentX(Component.LEFT_ALIGNMENT);
+        Regresar.addActionListener(e -> cardLayout.show(container, "Ajedrez"));
+        Configuration.add(Regresar, BorderLayout.NORTH);
+        Configuration.add(Config, BorderLayout.CENTER);
+        return Configuration;
+    }
 }

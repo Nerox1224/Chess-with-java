@@ -168,4 +168,84 @@ public class Rey extends Pieza {
 
         }
     }
+
+    @Override
+    public boolean SalvarRey(Casilla[][] tablero, int fila, int columna){
+        /*List<Casilla> remover = new ArrayList<>();
+        int direccion = getColor() == Color_pieza.ColorPieza.blanco ? -1 : 1;
+        int[] DerIzq = {1, -1};
+        int[][] movimiento = {
+                {-2, -1}, {-2, 1},
+                {-1, 2}, {1, 2},
+                {2, 1}, {2, -1},
+                {1, -2}, {-1, -2}};
+        int[][] cuadrantes = {{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
+        int[][] horizontales = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
+        for (var posMov : posiblesMovimientos) {
+            boolean removido = false;
+            //Peon
+            int yfo = posMov.getFila() + direccion;
+            for (var co : DerIzq) {
+                int d = posMov.getColumna() + co;
+                if (!validarFilaColumna(yfo, d)) continue;
+                if (tablero[yfo][d].getPieza() == null) continue;
+                if (!validarEnemigo(tablero[yfo][d])) continue;
+                if (tablero[yfo][d].getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Peon) continue;
+                remover.add(posMov);
+                removido = true;
+            }
+            if (removido) continue;
+
+            //Caballo
+            for (var destino : movimiento) {
+                int f = posMov.getFila() + destino[1];
+                int c = posMov.getColumna() + destino[0];
+                if (!validarFilaColumna(f, c)) continue;
+                if (tablero[f][c].getPieza() == null) continue;
+                if (!validarEnemigo(tablero[f][c])) continue;
+                if (tablero[f][c].getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Caballo) continue;
+                remover.add(posMov);
+                removido = true;
+            }
+            if (removido) continue;
+
+            //Torre o Reina
+            for (var dir : horizontales) {
+                int fp = posMov.getFila() + dir[0];
+                int cp = posMov.getColumna() + dir[1];
+                while (validarFilaColumna(fp, cp)) {
+                    Casilla c = tablero[fp][cp];
+                    fp += dir[0];
+                    cp += dir[1];
+                    if (c.getPieza() == null || c.getPieza().getTipo() == Tipo_pieza.Pieza_tipo.Rey) continue;
+                    if (!validarEnemigo(c)) break;
+                    if (c.getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Torre &&
+                            c.getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Reina) break;
+                    remover.add(posMov);
+                    removido = true;
+                    break;
+                }
+            }
+            if (removido) continue;
+
+            // Alfil o Reina
+            for (var cu : cuadrantes) {
+                int f = posMov.getFila() + cu[0];
+                int c = posMov.getColumna() + cu[1];
+                while (validarFilaColumna(f, c)) {
+                    Casilla casilla = tablero[f][c];
+                    f += cu[0];
+                    c += cu[1];
+                    if (casilla.getPieza() == null) continue;
+                    if (!validarEnemigo(casilla)) break;
+                    if (casilla.getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Alfil &&
+                            casilla.getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Reina) break;
+                    remover.add(posMov);
+                    break;
+                }
+            }
+        }*/
+        return false;
+    }
 }
