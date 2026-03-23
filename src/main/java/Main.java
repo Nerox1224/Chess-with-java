@@ -1,3 +1,4 @@
+import ChessBot.Bot;
 import Jugador.ConfigurationPlayer;
 import Jugador.Player;
 import Jugador.TipoPlayer;
@@ -12,8 +13,8 @@ import javax.swing.*;
 
 public class Main extends JFrame {
     private final Player PJugador = new Player(Color_pieza.ColorPieza.blanco, TipoPlayer.TipoJugador.PrincipalPlayer);
-    private final Player SJugador = new Player(Color_pieza.ColorPieza.negro, TipoPlayer.TipoJugador.player);
-    private ConfigurationPlayer Config = new ConfigurationPlayer(PJugador, SJugador);
+    private final Bot SJugador = new Bot(Color_pieza.ColorPieza.negro, TipoPlayer.TipoJugador.player);
+    private final ConfigurationPlayer Config = new ConfigurationPlayer(PJugador, SJugador);
     private Tablero tablero = new Tablero(PJugador, SJugador);
 
     private JPanel container;
@@ -80,21 +81,21 @@ public class Main extends JFrame {
         Options.add(Box.createVerticalStrut(80));
 
         /*   --------Eventos--------   */
-        Newgame.addActionListener(e -> {
+        Newgame.addActionListener(_ -> {
             tablero = new Tablero(PJugador, SJugador);
             container.remove(Tb());
             container.add(Tb(), "Game");
             cardLayout.show(container, "Game");
             tablero.PresentGame();
         });
-        Continue.addActionListener(e -> {
+        Continue.addActionListener(_ -> {
             cardLayout.show(container, "Game");
             tablero.PresentGame();
         });
-        Configuration.addActionListener(e -> {
+        Configuration.addActionListener(_ -> {
             cardLayout.show(container, "Configuration");
         });
-        Exit.addActionListener(e -> this.dispose());
+        Exit.addActionListener(_ -> this.dispose());
         return Options;
     }
 
@@ -104,7 +105,7 @@ public class Main extends JFrame {
 
         JButton Regresar = new JButton("Regresar");
         Regresar.setAlignmentX(Component.LEFT_ALIGNMENT);
-        Regresar.addActionListener(e -> cardLayout.show(container, "Ajedrez"));
+        Regresar.addActionListener(_ -> cardLayout.show(container, "Ajedrez"));
         Newgame.add(Regresar, BorderLayout.NORTH);
         Newgame.add(tablero.getTablero(), BorderLayout.CENTER);
         return Newgame;
@@ -116,7 +117,7 @@ public class Main extends JFrame {
 
         JButton Regresar = new JButton("Regresar");
         Regresar.setAlignmentX(Component.LEFT_ALIGNMENT);
-        Regresar.addActionListener(e -> cardLayout.show(container, "Ajedrez"));
+        Regresar.addActionListener(_ -> cardLayout.show(container, "Ajedrez"));
         Configuration.add(Regresar, BorderLayout.NORTH);
         Configuration.add(Config, BorderLayout.CENTER);
         return Configuration;

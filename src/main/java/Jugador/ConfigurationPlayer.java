@@ -1,34 +1,52 @@
 package Jugador;
 
+import ChessBot.Bot;
 import PiezasLogica.Color_pieza;
 
 import javax.swing.*;
 import java.awt.*;
-import java.security.PublicKey;
-import java.util.List;
 
 public class ConfigurationPlayer extends JPanel {
-    private JLabel Title = new JLabel("Configurations", JLabel.CENTER);
-    private JComboBox<Color_pieza.ColorPieza> ConfigColor = new JComboBox<>(Color_pieza.ColorPieza.values());
-    private JComboBox<TipoPlayer.TipoJugador> ConfigTipo = new JComboBox<>(TipoPlayer.TipoJugador.values());
+    private final JComboBox<Color_pieza.ColorPieza> ConfigColor = new JComboBox<>(Color_pieza.ColorPieza.values());
+    private final JComboBox<TipoPlayer.TipoJugador> ConfigTipo = new JComboBox<>(TipoPlayer.TipoJugador.values());
 
     public ConfigurationPlayer(Player p1, Player p2) {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
+        add(Titulo(), BorderLayout.NORTH);
+        add(ButtonsConfig(p1, p2), BorderLayout.CENTER);
+    }
+
+    /*  --- Add Title --- */
+    private JPanel Titulo() {
+        JPanel Titulo = new JPanel(new BorderLayout());
+        JLabel Title = new JLabel("Configurations", JLabel.CENTER);
+        Title.setFont(new Font("Arial", Font.BOLD, 32));
+        Titulo.add(Box.createVerticalStrut(90));
+        Titulo.add(Title, BorderLayout.SOUTH);
+        return Titulo;
+    }
+
+    /* --- Add Buttons --- */
+    private JPanel ButtonsConfig(Player p1, Player p2) {
+        JPanel ButtonsConfig = new JPanel(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.VERTICAL;
         gc.insets = new Insets(5, 5, 5, 5);
 
+        gc.gridx = 0;
+        gc.gridy = 0;
+        ButtonsConfig.add(new JLabel("Enfrentar a : "), gc);
+        gc.gridy = 1;
+        ButtonsConfig.add(new JLabel("Selecciona tu equipo : "), gc);
+
         gc.gridx = 1;
         gc.gridy = 0;
-        Title.setFont(new Font("Arial",Font.BOLD,32));
-        add(Title, gc);
-        gc.gridy = 2;
-        add(Box.createVerticalStrut(90));
-        add(ConfigTipo, gc);
-        gc.gridy = 3;
-        add(Box.createVerticalStrut(40));
-        add(ConfigColor, gc);
+        ButtonsConfig.add(ConfigTipo, gc);
+        gc.gridy = 1;
+        ButtonsConfig.add(Box.createVerticalStrut(40));
+        ButtonsConfig.add(ConfigColor, gc);
         AddConfigurations(p1, p2);
+        return ButtonsConfig;
     }
 
     private void AddConfigurations(Player p1, Player p2) {

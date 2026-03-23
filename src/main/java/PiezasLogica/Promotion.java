@@ -19,7 +19,6 @@ public class Promotion extends Dialog {
         setUndecorated(true);
 
         add(promotion(tablero, fila, columna, jugador));
-        setVisible(true);
     }
 
     private JPanel promotion(Casilla[][] tablero, int fila, int columna, Player jugador) {

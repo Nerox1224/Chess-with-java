@@ -19,6 +19,7 @@ public class Player {
 
     // Sets
     public void setTipoJugador(TipoPlayer.TipoJugador tipoJugador) {
+
         this.tipoJugador = tipoJugador;
     }
 

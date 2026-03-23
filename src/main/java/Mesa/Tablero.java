@@ -1,9 +1,13 @@
 package Mesa;
 
+import ChessBot.Bot;
+import ChessBot.Movimiento;
 import Jugador.Player;
+import Jugador.TipoPlayer;
 import PiezasLogica.Color_pieza;
 import PiezasLogica.Piezas.*;
 import PiezasLogica.Tipo_pieza;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,17 +20,17 @@ public class Tablero {
     private final Random rand = new Random();
 
     private final Player J1;
-    private final Player J2;
+    private final Bot J2;
 
     private Color_pieza.ColorPieza Turno;
-    private int numRand = rand.nextInt(1, 3);
+    private final int numRand = rand.nextInt(1, 3);
 
     private final Casilla[][] tablero = new Casilla[8][8];
     private Casilla posAnterior;
     private JPanel tabla;
     private List<Casilla> posiblesMovimientos;
 
-    public Tablero(Player J1, Player J2) {
+    public Tablero(Player J1, Bot J2) {
         this.J1 = J1;
         this.J2 = J2;
         NewGAME();
@@ -45,6 +49,10 @@ public class Tablero {
         presentGame.setHorizontalTextPosition(JLabel.CENTER);
         presentGame.setVerticalTextPosition(JLabel.NORTH);
         JOptionPane.showMessageDialog(null, presentGame);
+
+        if (Turno == J2.getColor() && J2.getTipoJugador() == TipoPlayer.TipoJugador.bot) {
+            MoveBot();
+        }
     }
 
     /*Funcionamiento interno*/
@@ -71,7 +79,7 @@ public class Tablero {
 
                 tablero[fila][columna].setBackground((fila + columna) % 2 == 0 ? Color.WHITE : Color.GRAY);
 
-                tablero[fila][columna].addActionListener(e -> {
+                tablero[fila][columna].addActionListener(_ -> {
                     if (tablero[f][c].getPieza() != null && tablero[f][c].getPieza().getColor() == Turno)
                         SelectCasilla(f, c);
                     else if (posAnterior != null)
@@ -83,9 +91,9 @@ public class Tablero {
     }
 
     /* Posicionar piezas */
-    private List<Integer> pos = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
+    private final List<Integer> pos = new ArrayList<>(List.of(0, 1, 2, 3, 4, 5, 6, 7));
 
-    private void PositionPiezas(int fila, Player player) {
+    private void PositionPiezas(int fila, @NotNull Player player) {
         Color_pieza.ColorPieza color = player.getColor();
         /* ---- Torres ---- */
         tablero[fila][pos.get(0)].setState(new Torre(color));
@@ -136,35 +144,66 @@ public class Tablero {
             c.getPieza().Mover(posiblesMovimientos, tablero, posAnterior, fila, column);
             Repintar();
 
-            //moveRey
-            if (tablero[fila][column].getPieza().getTipo() == Tipo_pieza.Pieza_tipo.Rey) {
-                if (J1.getColor() == Turno) {
-                    J1.setPositon_Rey(fila, column);
-                } else {
-                    J2.setPositon_Rey(fila, column);
-                }
+            changeStateAndValidations(fila, column);
+
+            if (J2.getTipoJugador() == TipoPlayer.TipoJugador.bot && J2.getColor() == Turno)
+                MoveBot();
+        }
+    }
+
+    //Mover bot
+    private void MoveBot() {
+        Movimiento mv = J2.BetterMove(tablero);
+
+        if (mv == null) {
+            BlockTablero();
+            return;
+        }
+
+        SelectCasilla(mv.getFo(), mv.getCo());
+        int fila = mv.getFd();
+        int column = mv.getCd();
+
+        tablero[mv.getFo()][mv.getCo()].getPieza().Mover(posiblesMovimientos, tablero, posAnterior, fila, column);
+        Repintar();
+
+        changeStateAndValidations(fila, column);
+    }
+
+    //Cambios de estado y verificaciones al movimiento
+    public void changeStateAndValidations(int fila, int column) {
+        /*moveRey*/
+        if (tablero[fila][column].getPieza().getTipo() == Tipo_pieza.Pieza_tipo.Rey) {
+            if (J1.getColor() == Turno) {
+                J1.setPositon_Rey(fila, column);
+            } else {
+                J2.setPositon_Rey(fila, column);
             }
+        }
 
-            /*Estado actual de la selección*/
-            posAnterior = null;
-            posiblesMovimientos = null;
+        /*Estado actual de la selección*/
+        posAnterior = null;
+        posiblesMovimientos = null;
 
-            /*Cambio de turno*/
-            Turno = tablero[fila][column].getPieza().getColor() == J1.getColor() ?
-                    J2.getColor() : J1.getColor();
+        /*Cambio de turno*/
+        if (Turno == J1.getColor())
+            ChangeTurn(J2);
+        else
+            ChangeTurn(J1);
+    }
 
-            /*Rey capturado??*/
-            if (PlayerWinner()) BlockTablero();
+    private void ChangeTurn(Player p) {
+        Turno = p.getColor();
 
-            /*Verificar sí el rey enemigo esta en jaque*/
-            var jaque = tablero[fila][column].getPieza().movimientosPosibles(tablero, fila, column);
-            for (var cj : jaque) {
-                if (cj.getPieza() == null) continue;
-                if (cj.getPieza().getTipo() != Tipo_pieza.Pieza_tipo.Rey) continue;
-                if (cj.getPieza().getColor() != Turno) continue;
-                JOptionPane.showMessageDialog(null, cj.getPieza().getTipo() + " " +
-                        cj.getPieza().getColor() + " en jaque");
-            }
+        /*Rey capturado??*/
+        if (PlayerWinner())
+            BlockTablero();
+
+        //Verificar jsi el rey esta en jaque
+        if (tablero[p.getFila_Rey()][p.getColumna_Rey()].getPieza().ReyEnJaque(tablero, p.getFila_Rey(), p.getColumna_Rey())) {
+            Casilla c = tablero[p.getFila_Rey()][p.getColumna_Rey()];
+            JOptionPane.showMessageDialog(null, c.getPieza().getTipo() + " " +
+                    c.getPieza().getColor() + " en jaque");
         }
     }
 

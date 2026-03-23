@@ -70,6 +70,7 @@ public class Peon extends Pieza {
 
             if (f == RowPromotion) {
                 Promotion pro = new Promotion(tablero, f, c, jugador);
+                pro.setVisible(true);
             }
         }
     }

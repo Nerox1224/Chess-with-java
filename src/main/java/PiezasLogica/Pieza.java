@@ -2,6 +2,7 @@ package PiezasLogica;
 
 import java.util.List;
 
+import Jugador.Player;
 import Mesa.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +45,7 @@ public abstract class Pieza implements Controlador {
     }
 
     @Override
-    public boolean SalvarRey(Casilla[][] tablero, int fila, int columna) {
+    public boolean ReyEnJaque(Casilla[][] tablero, int fila, int columna) {
         return false;
     }
 
